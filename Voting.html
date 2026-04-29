@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Secure Voting System</title>
+
+<style>
+
+body {
+  margin:0;
+  font-family:'Segoe UI',sans-serif;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* Card */
+.container {
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(15px);
+  padding:40px;
+  border-radius:20px;
+  width:350px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,0.3);
+  color:white;
+}
+
+/* Input */
+input {
+  width:90%;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  margin-bottom:10px;
+  font-size:16px;
+  text-align:center;
+}
+
+/* 🔙 BACK BUTTON */
+.back {
+  position:absolute;
+  top:20px;
+  left:20px;
+  padding:12px 25px;
+  font-size:16px;
+  font-weight:bold;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  color:white;
+  background: linear-gradient(45deg,#ff416c,#ff4b2b);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: all 0.3s;
+}
+
+.back:hover {
+  transform: scale(1.05);
+}
+
+/* READY BUTTON */
+.ready-btn {
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  color:white;
+  background: linear-gradient(45deg,#00c6ff,#0072ff);
+  margin-bottom:10px;
+  transition:0.3s;
+}
+
+.ready-btn:hover {
+  transform: scale(1.05);
+}
+
+/* MESSAGE */
+.msg {
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+/* VOTE BUTTON */
+.vote-btn {
+  width:100%;
+  padding:16px;
+  margin:12px 0;
+  font-size:17px;
+  font-weight:bold;
+  border:none;
+  border-radius:15px;
+  cursor:pointer;
+  color:white;
+  background: grey;
+  pointer-events:none;
+  opacity:0.6;
+  transition:0.3s;
+}
+
+.vote-btn.active {
+  background: linear-gradient(135deg,#ff9a9e,#fad0c4);
+  pointer-events:auto;
+  opacity:1;
+}
+
+.vote-btn.active:hover {
+  transform: translateY(-3px) scale(1.04);
+}
+
+/* SUCCESS POPUP */
+.success-box {
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.success-content {
+  background:white;
+  padding:30px;
+  border-radius:15px;
+  text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div class="container">
+
+<h2>🗳️ Distrtic Court Anuppur Employee Election Plz Enter Your Token Number</h2>
+
+<input type="text" id="token" placeholder="Enter Token Number">
+
+<button class="ready-btn" onclick="checkToken()">✅ Ready for Voting</button>
+
+<div id="msg" class="msg"></div>
+
+<button class="vote-btn" onclick="vote('Rajesh')">👤 Rajesh Kumar</button>
+<button class="vote-btn" onclick="vote('Tersu')">👤 Tersu Kol</button>
+
+</div>
+
+<script>
+
+const url = "https://script.google.com/macros/s/AKfycbw8p6kef1oIkU-O4E-DOPMH7wvgYwHqgJVR6kqfScFmgNQT0TpMYCoqxiyzq2vNy-O6/exec";
+
+// 🔐 TOKEN CHECK
+function checkToken(){
+
+  let token = document.getElementById("token").value;
+  let msg = document.getElementById("msg");
+  let buttons = document.querySelectorAll(".vote-btn");
+
+  if(!token){
+    msg.innerHTML = "❗ Token enter karo";
+    return;
+  }
+
+  msg.innerHTML = "⏳ Checking...";
+
+  fetch(url+"?checkToken="+token)
+  .then(res=>res.text())
+  .then(res=>{
+
+    if(res==="VALID"){
+      msg.innerHTML = "✅ Aap voting ke liye ready hain";
+      buttons.forEach(b=>b.classList.add("active"));
+    }
+    else if(res==="USED"){
+      msg.innerHTML = "❌ Token already used";
+      buttons.forEach(b=>b.classList.remove("active"));
+    }
+    else{
+      msg.innerHTML = "❌ Invalid Token";
+      buttons.forEach(b=>b.classList.remove("active"));
+    }
+
+  });
+}
+
+// 🗳️ VOTE
+function vote(name){
+
+  let token = document.getElementById("token").value;
+
+  if(!confirm("Vote for "+name+"?")) return;
+
+  fetch(url+"?candidate="+name+"&token="+token)
+  .then(res=>res.text())
+  .then(res=>{
+
+    if(res==="SUCCESS"){
+      showSuccess();
+    }
+    else if(res==="ALREADY VOTED"){
+      alert("❌ Already voted");
+    }
+    else{
+      alert("❌ Invalid Token");
+    }
+
+  });
+
+}
+
+// 🎉 SUCCESS + REDIRECT
+function showSuccess(){
+
+  let div = document.createElement("div");
+  div.className = "success-box";
+
+  div.innerHTML = `
+    <div class="success-content">
+      <h2>✅ Vote Successfully Submitted</h2>
+      <p>Redirecting to Home...</p>
+    </div>
+  `;
+
+  document.body.appendChild(div);
+
+  setTimeout(()=>{
+    window.location.href = "Login.html";
+  },2000);
+}
+
+// 🔙 BACK
+function goHome(){
+  window.location.href = "Login.html";
+}
+
+</script>
+
+</body>
+</html>

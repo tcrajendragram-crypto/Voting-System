@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Secure Login - Election 2026</title>
+
+<style>
+body {
+  font-family: Arial;
+  text-align:center;
+  background:#f2f2f2;
+}
+
+.card {
+  background:white;
+  padding:20px;
+  margin:100px auto;
+  width:300px;
+  border-radius:10px;
+}
+
+button {
+  padding:10px 15px;
+  background:green;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h3>Distrtic Court Anuppur Employee Election Login Plz Enter Your Token Number </h3>
+  <input id="token" placeholder="Enter Token"><br><br>
+  <button onclick="login()">Login</button>
+</div>
+
+<script>
+
+// 🔴 APNA GOOGLE SCRIPT URL YAHAN DAALO
+const scriptURL = "https://script.google.com/macros/s/AKfycbykk21_O_egrLSBReoivUJB-1uU0XrmqpmUCMjAHnR0EQfmIIwfcNmhDNw8mJhSA4wwFA/exec";
+
+function login() {
+
+  let token = document.getElementById("token").value;
+
+  if (token === "") {
+    alert("Token daalo");
+    return;
+  }
+
+  fetch(scriptURL, {
+    method: "POST",
+    body: JSON.stringify({
+      token: token,
+      action: "login"
+    })
+  })
+  .then(res => res.text())
+  .then(data => {
+
+    if (data === "VALID") {
+      // login success
+      localStorage.setItem("userToken", token);
+      window.location.href = "Voting.html";
+    }
+
+    else if (data === "USED") {
+      alert("Token already use ho chuka hai ❌");
+    }
+
+    else {
+      alert("Invalid Token ❌");
+    }
+
+  });
+
+}
+
+</script>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Link Button</title>
+
+<style>
+body {
+  text-align:center;
+  margin-top:100px;
+  font-family:Arial;
+}
+
+/* Button Style */
+.link-btn {
+  padding:15px 35px;
+  font-size:20px;
+  font-weight:bold;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+
+  background: linear-gradient(45deg, #2196F3, #00BCD4);
+  color:white;
+
+  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  transition:0.3s;
+}
+
+/* Hover */
+.link-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Click */
+.link-btn:active {
+  transform: scale(0.95);
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Employee Election Final Result</h2>
+
+<button class="link-btn" onclick="openPage()">Go to Result Page</button>
+
+<script>
+function openPage() {
+  window.location.href = "Result.html"; // apna link daalo
+}
+</script>
+
+</body>
+</html>
+
+</body>
+</html>
